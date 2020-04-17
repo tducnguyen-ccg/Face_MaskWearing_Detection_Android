@@ -252,28 +252,36 @@ public class OnGetImageListener implements OnImageAvailableListener {
 //                                    int pointY = (int) (point.y * resizeRatio);
 //                                    canvas.drawCircle(pointX, pointY, 2, mFaceLandmardkPaint);
 //                                }
+                                if (landmarks.size() >= 68){
+                                    // mount area
+                                    int mStart = 48;
+                                    int mEnd = 68;
+                                    int min_x = 999;
+                                    int min_y = 999;
+                                    int max_x = 0;
+                                    int max_y = 0;
+                                    for (int pt_id = mStart; pt_id<mEnd; pt_id++){
+                                        int loc_x = landmarks.get(pt_id).x;
+                                        int loc_y = landmarks.get(pt_id).y;
+                                        if (loc_x < min_x){min_x = loc_x;}
+                                        if (loc_x > max_x){max_x = loc_x;}
+                                        if (loc_y < min_y){min_y = loc_y;}
+                                        if (loc_y > max_y){max_y = loc_y;}
+                                    }
 
-                                // mount area
-//                                int mStart = 48;
-//                                int mEnd = 68;
-//                                int min_x = 999;
-//                                int min_y = 999;
-//                                int max_x = 0;
-//                                int max_y = 0;
-//                                for (int pt_id = mStart; pt_id<mEnd; pt_id++){
-//                                    int loc_x = landmarks.get(pt_id).x;
-//                                    int loc_y = landmarks.get(pt_id).y;
-//                                    if (loc_x < min_x){min_x = loc_x;}
-//                                    if (loc_x > max_x){max_x = loc_x;}
-//                                    if (loc_y < min_y){min_y = loc_y;}
-//                                    if (loc_y > max_y){max_y = loc_y;}
-//                                }
+                                    float avg_mouthArea = calculate_avg_color(
+                                            (int) (min_x * resizeRatio),
+                                            (int) (max_x * resizeRatio),
+                                            (int) (min_y * resizeRatio),
+                                            (int) (max_y * resizeRatio));
 //
-//                                // Calculate saturation of mouth
+                                    // Calculate saturation of mouth
 //                                min_x = (int) (min_x * resizeRatio);
 //                                max_x = (int) (max_x * resizeRatio);
 //                                min_y = (int) (min_y * resizeRatio);
 //                                max_y = (int) (max_y * resizeRatio);
+
+
 //
 //                                float sum_saturation = 0;
 //                                for (int mx = min_x; mx < max_x; mx ++){
@@ -303,49 +311,51 @@ public class OnGetImageListener implements OnImageAvailableListener {
 //                                    canvas.drawText("Chưa đeo khẩu trang", (int)(newWidth / 3), newHeight - 5, paint);
 //                                }
 
-                                // Comparing intensity
-                                // Middle area of 2 eyebrow (landmark 21, 22)
+                                    // Comparing intensity
+                                    // Middle area of 2 eyebrow (landmark 21, 22)
 //                                float avg_eyebrow = calculate_avg_color(
 //                                        (int)(landmarks.get(21).x*resizeRatio),
 //                                        (int)(landmarks.get(22).x*resizeRatio),
 //                                        (int)(landmarks.get(21).y*resizeRatio),
 //                                        (int)(landmarks.get(22).y*resizeRatio));
 
-                                // Middle of 2 eyes (landmark 39, 42)
+                                    // Middle of 2 eyes (landmark 39, 42)
 //                                float avg_eyes = calculate_avg_color(
 //                                        (int)(landmarks.get(39).x*resizeRatio),
 //                                        (int)(landmarks.get(42).x*resizeRatio),
 //                                        (int)(landmarks.get(39).y*resizeRatio),
 //                                        (int)(landmarks.get(42).y*resizeRatio));
 
-                                // Middle area of uper area
-                                float avg_eyesArea = calculate_avg_color(
-                                        (int)(landmarks.get(21).x*resizeRatio),
-                                        (int)(landmarks.get(42).x*resizeRatio),
-                                        (int)(landmarks.get(21).y*resizeRatio),
-                                        (int)(landmarks.get(42).y*resizeRatio));
+                                    // Middle area of uper area
+//                                float avg_eyesArea = calculate_avg_color(
+//                                        (int)(landmarks.get(21).x*resizeRatio),
+//                                        (int)(landmarks.get(42).x*resizeRatio),
+//                                        (int)(landmarks.get(21).y*resizeRatio),
+//                                        (int)(landmarks.get(42).y*resizeRatio));
 
-                                // Left mouth (landmark 4, 48)
-                                float avg_lmouth = calculate_avg_color(
-                                        (int)(landmarks.get(4).x*resizeRatio),
-                                        (int)(landmarks.get(48).x*resizeRatio),
-                                        (int)(landmarks.get(4).y*resizeRatio),
-                                        (int)(landmarks.get(48).y*resizeRatio));
+                                    // Left mouth (landmark 4, 48)
+                                    float avg_lmouth = calculate_avg_color(
+                                            (int)(landmarks.get(4).x*resizeRatio),
+                                            (int)(landmarks.get(48).x*resizeRatio),
+                                            (int)(landmarks.get(4).y*resizeRatio),
+                                            (int)(landmarks.get(48).y*resizeRatio));
 
-                                // Right mouth (landmark 54, 12)
-                                float avg_rmouth = calculate_avg_color(
-                                        (int)(landmarks.get(54).x*resizeRatio),
-                                        (int)(landmarks.get(12).x*resizeRatio),
-                                        (int)(landmarks.get(54).y*resizeRatio),
-                                        (int)(landmarks.get(12).y*resizeRatio));
+                                    // Right mouth (landmark 54, 12)
+                                    float avg_rmouth = calculate_avg_color(
+                                            (int)(landmarks.get(54).x*resizeRatio),
+                                            (int)(landmarks.get(12).x*resizeRatio),
+                                            (int)(landmarks.get(54).y*resizeRatio),
+                                            (int)(landmarks.get(12).y*resizeRatio));
 
-                                double diff =  100 - Math.abs(avg_eyesArea - ((avg_lmouth + avg_rmouth)/2))/ Math.max(avg_eyesArea,((avg_lmouth + avg_rmouth)/2)) * 100;
-                                float newWidth =  mCroppedBitmap.getWidth();
-                                float newHeight =  mCroppedBitmap.getHeight();
-                                canvas.drawText(Double.toString(diff), (int)(newWidth / 3), newHeight - 5, mFaceLandmardkPaint);
+                                    double diff =  Math.abs(avg_mouthArea - ((avg_lmouth + avg_rmouth)/2))/ Math.max(avg_mouthArea,((avg_lmouth + avg_rmouth)/2)) * 100;
+                                    float newHeight =  mCroppedBitmap.getHeight();
+                                    float newWidth =  mCroppedBitmap.getWidth();
+                                    canvas.drawText(Double.toString(diff), (int)(newWidth / 3), newHeight - 5, mFaceLandmardkPaint);
 
-
-
+                                    if (diff >= 20){
+                                        canvas.drawText("Vui long mang khau trang", (int)(newWidth / 6), newHeight - 30, mFaceLandmardkPaint);
+                                    }
+                                }
                             }
                         }
 
